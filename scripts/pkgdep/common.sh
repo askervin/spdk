@@ -106,6 +106,90 @@ install_markdownlint() {
 	fi
 }
 
+install_protoc() {
+	local PROTOCVERSION=${PROTOCVERSION:-21.7}
+	local PROTOCDIR PROTOCPKG PROTOCURL ARCH
+	PROTOCDIR=/opt/protoc/${PROTOCVERSION}
+	[ -x "${PROTOCDIR}/bin/protoc" ] && {
+		echo "protoc already installed to ${PROTOCDIR}"
+		return 0
+	}
+	mkdir -p "${PROTOCDIR}"
+	ARCH=x86_64
+	if [ "$(arch)" == "aarch64" ]; then
+		ARCH=aarch_64
+	fi
+	PROTOCPKG=protoc-${PROTOCVERSION}-linux-${ARCH}.zip
+	PROTOCURL=https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOCVERSION}/${PROTOCPKG}
+	curl -f -LO "${PROTOCURL}" || {
+		echo "downloading protoc ${PROTOCVERSION} from ${PROTOCURL} failed"
+		return 1
+	}
+	(unzip -d "${PROTOCDIR}" "${PROTOCPKG}" && rm -f "${PROTOCPKG}") || {
+		echo "extracting protoc ${PROTOCVERSION} from ${PROTOCPKG} failed"
+		return 1
+	}
+	pkgdep_toolpath protoc "${PROTOCDIR}/bin"
+}
+
+install_golang() {
+	local GOVERSION=${GOVERSION:-1.19}
+	local ARCH GODIR GOPKG
+	GODIR=/opt/go/${GOVERSION}
+	if [ -x "${GODIR}/bin/go" ]; then
+		echo "golang already installed in ${GODIR}"
+		return 0
+	fi
+	mkdir -p "${GODIR}"
+	ARCH=amd64
+	if [ "$(arch)" == "aarch64" ]; then
+		ARCH=arm64
+	fi
+	GOPKG=go${GOVERSION}.linux-${ARCH}.tar.gz
+	curl -s https://dl.google.com/go/${GOPKG} | tar -C "${GODIR}" -xzf - --strip 1
+	${GODIR}/bin/go version || {
+		echo "golang install failed"
+		return 1
+	}
+	export PATH=${GODIR}/bin:$PATH
+	export GOBIN=${GODIR}/bin
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 || {
+		echo "golang protoc go plugin install failed"
+		return 1
+	}
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 || {
+		echo "golang protoc grpc plugin install failed"
+		return 1
+	}
+	pkgdep_toolpath go "${GODIR}/bin"
+}
+
+pkgdep_toolpath() {
+	# Usage: pkgdep_toolpath TOOL DIR
+	#
+	# Update scripts/pkgdep.path.sh to make sure that
+	# TOOL in DIR will be in PATH before other versions
+	# of the TOOL installed in the system.
+	local toolname="$1"
+	local toolpath="$2"
+	[ -d "${scriptsdir}" ] || {
+		echo "no \$scriptsdir, cannot find pkgdep.path.d"
+		return 1
+	}
+	local toolpath_dir="${scriptsdir}/pkgdep.path.d"
+	local toolpath_file="${toolpath_dir}/${toolname}.path"
+	local export_file="${scriptsdir}/pkgdep.path.sh"
+	mkdir -p "$(dirname "${toolpath_file}")"
+	echo "${toolpath}" > "${toolpath_file}"
+	echo "# generated, source this file in shell" > "${export_file}"
+	for pathfile in "${toolpath_dir}"/*.path; do
+		echo "PATH=$(< ${pathfile}):\$PATH" >> "${export_file}"
+	done
+	echo "export PATH=\$PATH" >> "${export_file}"
+	echo "echo \$PATH" >> "${export_file}"
+	chmod a+x "${export_file}"
+}
+
 if [[ $INSTALL_DEV_TOOLS == true ]]; then
 	install_shfmt
 	install_spdk_bash_completion
@@ -118,4 +202,9 @@ fi
 
 if [[ $INSTALL_LIBURING == true ]]; then
 	install_liburing
+fi
+
+if [[ $INSTALL_GOLANG == true ]]; then
+	install_protoc
+	install_golang
 fi

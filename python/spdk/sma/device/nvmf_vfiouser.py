@@ -10,7 +10,7 @@ from spdk.rpc.client import JSONRPCException
 from spdk.sma import qos
 
 from ..common import format_volume_id, volume_id_to_nguid
-from ..proto import sma_pb2
+from spdk.apis.sma import sma_pb2
 from ..qmp import QMPClient, QMPError
 from ..volume import CryptoException, get_crypto_engine
 from .device import DeviceException, DeviceManager

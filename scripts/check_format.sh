@@ -179,7 +179,7 @@ function check_spaces_before_tabs() {
 	local rc=0
 
 	echo -n "Checking for spaces before tabs..."
-	git grep --line-number $' \t' -- './*' ':!*.patch' > whitespace.log || true
+	git grep --line-number $' \t' -- './*' ':!*.patch' ':!*.pb.go' > whitespace.log || true
 	if [ -s whitespace.log ]; then
 		echo " Spaces before tabs detected"
 		cat whitespace.log

@@ -6,8 +6,8 @@ from spdk.sma import qos
 from .device import DeviceManager, DeviceException
 from ..common import format_volume_id, volume_id_to_nguid
 from ..volume import get_crypto_engine, CryptoException
-from ..proto import sma_pb2
-from ..proto import nvmf_tcp_pb2
+from spdk.apis.sma import sma_pb2
+from spdk.apis.sma import nvmf_tcp_pb2
 
 
 class NvmfTcpDeviceManager(DeviceManager):

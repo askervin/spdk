@@ -38,5 +38,8 @@ mk/cc.flags.mk
 PYTHON_COMMAND
 test_completions.txt
 timing.txt
+apis/python/__init__.py
+apis/python/sma/*.py
+scripts/pkgdep.path.sh
 test/common/build_config.sh
 .coredump_path

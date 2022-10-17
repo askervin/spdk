@@ -2,7 +2,7 @@ import grpc
 
 from spdk.rpc.client import JSONRPCException
 from .common import format_volume_id
-from .proto import sma_pb2
+from spdk.apis.sma import sma_pb2
 
 
 LIMIT_UNDEFINED = (1 << 64) - 1

@@ -18,6 +18,7 @@ function usage() {
 	echo "  -b --docs                   Additional dependencies for building docs"
 	echo "  -u --uring                  Additional dependencies for io_uring"
 	echo "  -D --daos                   Additional dependencies for DAOS"
+	echo "  -G --golang                 Additional dependencies for go interface generation"
 	echo ""
 	exit 0
 }
@@ -30,6 +31,7 @@ function install_all_dependencies() {
 	INSTALL_DOCS=true
 	INSTALL_LIBURING=true
 	INSTALL_DAOS=true
+	INSTALL_GOLANG=true
 }
 
 INSTALL_CRYPTO=false
@@ -40,8 +42,9 @@ INSTALL_RDMA=false
 INSTALL_DOCS=false
 INSTALL_LIBURING=false
 INSTALL_DAOS=false
+INSTALL_GOLANG=false
 
-while getopts 'abdfhipruD-:' optchar; do
+while getopts 'abdfhipruDG-:' optchar; do
 	case "$optchar" in
 		-)
 			case "$OPTARG" in
@@ -54,6 +57,7 @@ while getopts 'abdfhipruD-:' optchar; do
 				docs) INSTALL_DOCS=true ;;
 				uring) INSTALL_LIBURING=true ;;
 				daos) INSTALL_DAOS=true ;;
+				golang) INSTALL_GOLANG=true ;;
 				*)
 					echo "Invalid argument '$OPTARG'"
 					usage
@@ -69,6 +73,7 @@ while getopts 'abdfhipruD-:' optchar; do
 		b) INSTALL_DOCS=true ;;
 		u) INSTALL_LIBURING=true ;;
 		D) INSTALL_DAOS=true ;;
+		G) INSTALL_GOLANG=true ;;
 		*)
 			echo "Invalid argument '$OPTARG'"
 			usage

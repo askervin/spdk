@@ -7,8 +7,8 @@ from .device import DeviceException
 from .volume import VolumeException, VolumeManager
 from .volume import crypto
 from .volume import crypto_bdev
-from .proto import sma_pb2 as pb2
-from .proto import sma_pb2_grpc as pb2_grpc
+from spdk.apis.sma import sma_pb2 as pb2
+from spdk.apis.sma import sma_pb2_grpc as pb2_grpc
 
 
 class StorageManagementAgent(pb2_grpc.StorageManagementAgentServicer):

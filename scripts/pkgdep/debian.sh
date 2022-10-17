@@ -4,7 +4,7 @@ VERSION_ID_NUM=$(sed 's/\.//g' <<< $VERSION_ID)
 # Includes Ubuntu, Debian
 # Minimal install
 apt-get install -y gcc g++ make libcunit1-dev libaio-dev libssl-dev libjson-c-dev libcmocka-dev uuid-dev libiscsi-dev
-if [[ $NAME == "Ubuntu" ]] && [[ $VERSION_ID_NUM -ge 2204 ]]; then
+if [[ $NAME == "Ubuntu" ]] && [[ $VERSION_ID_NUM -ge 2204 ]] || [[ $NAME == "Debian"* ]]; then
 	# there is no python package in Ubuntu 22.04
 	apt-get install -y python3
 else

@@ -4,7 +4,7 @@ import uuid
 from spdk.rpc.client import JSONRPCException
 from . import crypto
 from ..common import format_volume_id
-from ..proto import sma_pb2
+from spdk.apis.sma import sma_pb2
 
 
 log = logging.getLogger(__name__)

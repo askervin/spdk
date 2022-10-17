@@ -1,4 +1,4 @@
-from ..proto import sma_pb2
+from spdk.apis.sma import sma_pb2
 
 
 class DeviceException(Exception):
